@@ -1,0 +1,8 @@
+build/
+dist/
+backup_v1.0/
+__pycache__/
+*.spec
+*.pyc
+config.json
+*.log
