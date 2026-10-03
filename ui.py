@@ -4,24 +4,32 @@
 import tkinter as tk
 import tkinter.font as tkfont
 
-# --- palette chiara e minimale --------------------------------------------
-BG = "#f3f5f7"
-SIDE = "#ffffff"
-CARD = "#ffffff"
-CAMPO = "#f3f5f7"
-BORDO = "#e4e8ed"
-FG = "#1c2530"
-FG2 = "#6d7885"
-FG3 = "#a3acb6"
-OK = "#00a88e"
-OK_SCURO = "#00957e"
-OK_TENUE = "#e3f5f1"
-KO = "#e5484d"
-KO_TENUE = "#fdecec"
-GRIGIO = "#eef1f4"
-GRIGIO_SCURO = "#e2e6eb"
+# --- palette "portiere d'albergo" -----------------------------------------
+# divisa bordeaux, galloni dorati, guanti e marmo color avorio
+BG = "#f5efe3"          # avorio
+SIDE = "#4a1526"        # bordeaux della divisa
+SIDE_SEL = "#5e1d31"
+SIDE_FG = "#f5efe3"
+SIDE_FG2 = "#c7aeb4"
+CARD = "#fffcf6"
+CAMPO = "#f5efe3"
+BORDO = "#e6d9bf"
+FG = "#2a1a14"          # marrone scuro
+FG2 = "#7a675a"
+FG3 = "#ab9a8a"
+ORO = "#c39a3a"         # galloni e bottoni
+ORO_TENUE = "#f4e9cf"
+BORDEAUX = "#6e1f33"
+BORDEAUX_SCURO = "#581827"
+OK = "#2f6b4f"          # verde inglese: stato in servizio
+OK_TENUE = "#e1ede5"
+KO = "#b3362f"
+KO_TENUE = "#f8e3df"
+GRIGIO = "#eee5d3"
+GRIGIO_SCURO = "#e2d6be"
 
 F = "Segoe UI"
+SERIF = "Georgia"       # titoli, come l'insegna di un hotel
 
 
 def tondo(c, x1, y1, x2, y2, r, **kw):
@@ -68,7 +76,7 @@ class Bottone(tk.Canvas):
     """Bottone a pillola. stile: primario, secondario, pericolo."""
 
     STILI = {  # sfondo, sfondo al passaggio del mouse, testo
-        "primario": (OK, OK_SCURO, "#ffffff"),
+        "primario": (BORDEAUX, BORDEAUX_SCURO, "#f5e6c0"),
         "secondario": (GRIGIO, GRIGIO_SCURO, FG),
         "pericolo": (KO_TENUE, "#fadcdc", KO),
     }
@@ -134,7 +142,7 @@ class Interruttore(tk.Canvas):
     def _disegna(self):
         self.delete("all")
         acceso = self.var.get()
-        tondo(self, 0, 0, 42, 24, 12, fill=OK if acceso else GRIGIO_SCURO, outline="")
+        tondo(self, 0, 0, 42, 24, 12, fill=ORO if acceso else GRIGIO_SCURO, outline="")
         x = 30 if acceso else 12
         self.create_oval(x - 9, 3, x + 9, 21, fill="#ffffff", outline="")
 

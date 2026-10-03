@@ -12,8 +12,9 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog
 
 import core
-from ui import (BG, BORDO, CAMPO, CARD, F, FG, FG2, FG3, KO, KO_TENUE, OK,
-                OK_TENUE, SIDE, Bottone, Card, Interruttore, campo_testo, tondo)
+from ui import (BG, BORDO, CAMPO, CARD, F, FG, FG2, FG3, KO, KO_TENUE, OK, OK_TENUE, ORO,
+                ORO_TENUE, SERIF, SIDE, SIDE_FG, SIDE_FG2, SIDE_SEL, Bottone, Card,
+                Interruttore, campo_testo, tondo)
 
 
 class DoormanApp(tk.Tk):
@@ -49,22 +50,24 @@ class DoormanApp(tk.Tk):
               ("registro", "Registro"), ("impostazioni", "Impostazioni"))
 
     def _barra_laterale(self):
-        side = tk.Frame(self, bg=SIDE, width=220)
+        side = tk.Frame(self, bg=SIDE, width=228)
         side.pack(side="left", fill="y")
         side.pack_propagate(False)
-        tk.Frame(self, bg=BORDO, width=1).pack(side="left", fill="y")
+        tk.Frame(self, bg=ORO, width=3).pack(side="left", fill="y")   # gallone dorato
 
         marchio = tk.Frame(side, bg=SIDE)
-        marchio.pack(fill="x", pady=(28, 32), padx=22)
-        self.logo = tk.Canvas(marchio, width=32, height=36, bg=SIDE,
+        marchio.pack(fill="x", pady=(28, 10), padx=22)
+        self.logo = tk.Canvas(marchio, width=40, height=34, bg=SIDE,
                               highlightthickness=0)
         self.logo.pack(side="left")
+        self._disegna_berretto()
         testo = tk.Frame(marchio, bg=SIDE)
         testo.pack(side="left", padx=(12, 0))
-        tk.Label(testo, text="Doorman", bg=SIDE, fg=FG,
-                 font=(F, 13, "bold")).pack(anchor="w")
-        tk.Label(testo, text="Protezione famiglia", bg=SIDE, fg=FG3,
-                 font=(F, 8)).pack(anchor="w")
+        tk.Label(testo, text="Doorman", bg=SIDE, fg=SIDE_FG,
+                 font=(SERIF, 17, "bold")).pack(anchor="w")
+        tk.Label(testo, text="il portiere del tuo PC", bg=SIDE, fg=ORO,
+                 font=(SERIF, 8, "italic")).pack(anchor="w")
+        tk.Frame(side, bg=ORO, height=1).pack(fill="x", padx=22, pady=(14, 22))
 
         for chiave, etichetta in self.PAGINE:
             voce = tk.Canvas(side, height=40, bg=SIDE, highlightthickness=0,
@@ -75,7 +78,7 @@ class DoormanApp(tk.Tk):
             voce.bind("<Configure>", lambda e, k=chiave: self._disegna_voce(k))
             self.nav[chiave] = voce
 
-        tk.Label(side, text="versione %s" % core.VERSIONE, bg=SIDE, fg=FG3,
+        tk.Label(side, text="versione %s" % core.VERSIONE, bg=SIDE, fg=SIDE_FG2,
                  font=(F, 8)).pack(side="bottom", pady=18)
 
     def _disegna_voce(self, chiave):
@@ -83,9 +86,10 @@ class DoormanApp(tk.Tk):
         attiva = chiave == getattr(self, "pagina", None)
         voce.delete("all")
         if attiva:
-            tondo(voce, 0, 0, voce.winfo_width(), 40, 20, fill=OK_TENUE, outline="")
-        voce.create_text(20, 20, text=voce.etichetta, anchor="w",
-                         fill=OK if attiva else FG2,
+            tondo(voce, 0, 0, voce.winfo_width(), 40, 20, fill=SIDE_SEL, outline="")
+            voce.create_oval(14, 17, 20, 23, fill=ORO, outline="")       # bottone d'ottone
+        voce.create_text(30, 20, text=voce.etichetta, anchor="w",
+                         fill=SIDE_FG if attiva else SIDE_FG2,
                          font=(F, 10, "bold" if attiva else "normal"))
 
     def _area(self):
@@ -104,7 +108,7 @@ class DoormanApp(tk.Tk):
         blocco = tk.Frame(riga, bg=CARD)
         blocco.pack(side="left", padx=(20, 0))
         self.lbl_stato = tk.Label(blocco, text="", bg=CARD, fg=FG,
-                                  font=(F, 19, "bold"), anchor="w")
+                                  font=(SERIF, 19, "bold"), anchor="w")
         self.lbl_stato.pack(anchor="w")
         self.lbl_dett = tk.Label(blocco, text="", bg=CARD, fg=FG2, font=(F, 9),
                                  anchor="w", justify="left", wraplength=420)
@@ -138,31 +142,29 @@ class DoormanApp(tk.Tk):
             self._ricarica_log()
 
     # =================================================== grafica stato
-    @staticmethod
-    def _scudo(c, x, y, s, colore):
-        """Scudo arrotondato largo s*2, con vertice in (x, y)."""
-        # punti doppi = spigolo vivo (spalle e punta), gli altri vengono smussati
-        punti = [x, y, x + s, y + s * .3, x + s, y + s * .3, x + s, y + s,
-                 x, y + s * 2.1, x, y + s * 2.1, x - s, y + s,
-                 x - s, y + s * .3, x - s, y + s * .3]
-        return c.create_polygon(punti, smooth=True, fill=colore, outline="")
+    def _disegna_berretto(self):
+        """Logo: berretto da portiere, oro con fascia scura e visiera."""
+        c = self.logo
+        c.delete("all")
+        tondo(c, 6, 3, 34, 21, 8, fill=ORO, outline="")
+        c.create_rectangle(6, 16, 34, 21, fill="#8c6a22", outline="")
+        c.create_oval(17, 7, 23, 13, fill=SIDE, outline="")              # stemma
+        c.create_polygon(3, 21, 37, 21, 31, 29, 9, 29, smooth=True,
+                         fill="#24070f", outline="")                      # visiera
 
     def _disegna_anello(self, attiva):
+        """Porta chiusa (in servizio) o socchiusa (fuori servizio)."""
         c = self.anello
         c.delete("all")
         colore = OK if attiva else KO
         c.create_oval(2, 2, 82, 82, fill=OK_TENUE if attiva else KO_TENUE, outline="")
-        self._scudo(c, 42, 16, 21, colore)
+        tondo(c, 28, 17, 56, 68, 10, fill="", outline=colore, width=2)    # stipite
         if attiva:
-            c.create_line(33, 42, 40, 49, 52, 36, fill="#ffffff", width=4,
-                          capstyle="round", joinstyle="round")
+            tondo(c, 31, 20, 53, 66, 8, fill=colore, outline="")
+            c.create_oval(46, 41, 51, 46, fill=ORO, outline="")           # pomello
         else:
-            c.create_line(36, 36, 48, 48, fill="#ffffff", width=4, capstyle="round")
-            c.create_line(48, 36, 36, 48, fill="#ffffff", width=4, capstyle="round")
-
-        s = self.logo
-        s.delete("all")
-        self._scudo(s, 16, 2, 14, colore)
+            c.create_polygon(31, 20, 44, 26, 44, 60, 31, 66, fill=colore, outline="")
+            c.create_oval(39, 41, 43, 45, fill=ORO, outline="")
 
     # =================================================== pagina: stato
     def _pag_stato(self, p):
@@ -486,13 +488,13 @@ class DoormanApp(tk.Tk):
         attiva = bool(self.cfg.get("protezione_attiva"))
         self._disegna_anello(attiva)
         if attiva:
-            self.lbl_stato.configure(text="Protezione attiva", fg=FG)
+            self.lbl_stato.configure(text="Il portiere è in servizio", fg=FG)
             self.lbl_dett.configure(
                 text="%d regole sui siti  ·  %d programmi sorvegliati  ·  policy browser applicate"
                      % (core.conta_regole_hosts(), len(self.cfg.get("programmi", []))))
             self.btn_toggle.imposta("Disattiva", "pericolo")
         else:
-            self.lbl_stato.configure(text="Protezione disattivata", fg=FG)
+            self.lbl_stato.configure(text="Il portiere è fuori servizio", fg=FG)
             self.lbl_dett.configure(text="Il computer non e' protetto.")
             self.btn_toggle.imposta("Attiva protezione", "primario")
         if not core.is_admin():
@@ -505,7 +507,7 @@ class DoormanApp(tk.Tk):
         testa = tk.Frame(card.dentro, bg=CARD)
         testa.pack(fill="x", padx=14, pady=(10, 8))
         tk.Label(testa, text=titolo, bg=CARD, fg=FG,
-                 font=(F, 11, "bold")).pack(side="left")
+                 font=(SERIF, 12, "bold")).pack(side="left")
         if sottotitolo:
             tk.Label(testa, text=sottotitolo, bg=CARD, fg=FG3,
                      font=(F, 8)).pack(side="left", padx=(10, 0))
@@ -516,7 +518,7 @@ class DoormanApp(tk.Tk):
                     margine=8, bordo=None)
         cont.pack(fill="both", expand=True, padx=14)
         lst = tk.Listbox(cont.dentro, bg=CAMPO, fg=FG, bd=0, highlightthickness=0,
-                         selectbackground=OK_TENUE, selectforeground=OK,
+                         selectbackground=ORO_TENUE, selectforeground=FG,
                          font=(F, 10), activestyle="none", relief="flat")
         lst.pack(fill="both", expand=True, padx=4)
         return lst
